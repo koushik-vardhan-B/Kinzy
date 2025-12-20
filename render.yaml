@@ -3,7 +3,7 @@ services:
     name: ai-game-generator
     runtime: python
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --reload
+    startCommand: uvicorn main:app
     envVars:
       - key: GEMINI_API_KEY
         sync: false
