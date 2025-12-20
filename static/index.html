@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Game Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2rem;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #444;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 120px;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea::placeholder {
+            color: #999;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(17, 153, 142, 0.4);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e0e0e0;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .result {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .result.active {
+            display: block;
+        }
+
+        .result-message {
+            color: #28a745;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .error {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff5f5;
+            border: 1px solid #ffcccc;
+            border-radius: 10px;
+            color: #c53030;
+        }
+
+        .error.active {
+            display: block;
+        }
+
+        .example {
+            margin-top: 25px;
+            padding: 15px;
+            background: #f0f4ff;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .example-title {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .example-text {
+            color: #555;
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 AI Game Generator</h1>
+        <p class="subtitle">Create educational HTML games using AI</p>
+
+        <form id="gameForm">
+            <div class="form-group">
+                <label for="prompt">Describe your game:</label>
+                <textarea 
+                    id="prompt" 
+                    name="prompt" 
+                    placeholder="E.g., Create a kid-friendly math addition game for ages 6–8 with five questions and a score counter..."
+                    required
+                    minlength="10"
+                    maxlength="1000"
+                ></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="generateBtn">
+                ✨ Generate Game
+            </button>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p class="loading-text">Generating your game... This may take a moment.</p>
+        </div>
+
+        <div class="error" id="error"></div>
+
+        <div class="result" id="result">
+            <p class="result-message">🎉 Your game is ready!</p>
+            <a href="#" class="btn btn-success" id="playBtn" target="_blank">
+                🎮 Play Game
+            </a>
+        </div>
+
+        <div class="example">
+            <p class="example-title">💡 Example prompt:</p>
+            <p class="example-text">"Create a kid-friendly math addition game for ages 6–8 with five questions and a score counter"</p>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('gameForm');
+        const promptInput = document.getElementById('prompt');
+        const generateBtn = document.getElementById('generateBtn');
+        const loading = document.getElementById('loading');
+        const result = document.getElementById('result');
+        const error = document.getElementById('error');
+        const playBtn = document.getElementById('playBtn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const prompt = promptInput.value.trim();
+            if (prompt.length < 10) {
+                showError('Please enter a more detailed game description (at least 10 characters).');
+                return;
+            }
+
+            // Reset UI
+            hideError();
+            hideResult();
+            showLoading();
+            generateBtn.disabled = true;
+
+            try {
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ prompt }),
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.detail || 'Failed to generate game');
+                }
+
+                // Show success
+                playBtn.href = data.play_url;
+                showResult();
+            } catch (err) {
+                showError(err.message || 'An error occurred. Please try again.');
+            } finally {
+                hideLoading();
+                generateBtn.disabled = false;
+            }
+        });
+
+        function showLoading() {
+            loading.classList.add('active');
+        }
+
+        function hideLoading() {
+            loading.classList.remove('active');
+        }
+
+        function showResult() {
+            result.classList.add('active');
+        }
+
+        function hideResult() {
+            result.classList.remove('active');
+        }
+
+        function showError(message) {
+            error.textContent = message;
+            error.classList.add('active');
+        }
+
+        function hideError() {
+            error.classList.remove('active');
+        }
+    </script>
+</body>
+</html>

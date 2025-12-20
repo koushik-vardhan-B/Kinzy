@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Adventure: Addition Fun!</title>
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --secondary: #FF9800;
+            --accent: #2196F3;
+            --error: #f44336;
+            --background: #e3f2fd;
+            --text: #333;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        #game-container {
+            background-color: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            border: 8px solid var(--accent);
+        }
+
+        h1 {
+            color: var(--accent);
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            margin: 10px;
+            font-weight: bold;
+            box-shadow: 0 4px 0 #388E3C;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            background-color: #45a049;
+        }
+
+        .btn:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+        .option-btn {
+            background-color: var(--secondary);
+            box-shadow: 0 4px 0 #E65100;
+            width: 80%;
+            display: block;
+            margin: 15px auto;
+        }
+
+        .option-btn:hover {
+            background-color: #fb8c00;
+        }
+
+        .math-problem {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin: 30px 0;
+            color: var(--accent);
+            background: #f0f7ff;
+            padding: 20px;
+            border-radius: 15px;
+            display: inline-block;
+            min-width: 200px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 15px;
+            background-color: #ddd;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        #progress-fill {
+            height: 100%;
+            background-color: var(--accent);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .feedback {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 5rem;
+            z-index: 100;
+            pointer-events: none;
+            display: none;
+        }
+
+        .shake {
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            50% { transform: translateX(10px); }
+            75% { transform: translateX(-10px); }
+            100% { transform: translateX(0); }
+        }
+
+        .celebrate {
+            animation: bounce 0.5s infinite alternate;
+        }
+
+        @keyframes bounce {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
+        }
+
+        .score-display {
+            font-size: 1.5rem;
+            margin: 20px 0;
+            color: var(--primary);
+        }
+
+        p.instruction {
+            font-size: 1.1rem;
+            line-height: 1.5;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen active">
+            <h1>Math Adventure! 🚀</h1>
+            <p class="instruction">Welcome, young mathematician! Are you ready to practice your addition skills? Answer 5 questions to win!</p>
+            <div style="font-size: 4rem; margin: 20px;">➕</div>
+            <button class="btn" onclick="startGame()">Let's Play!</button>
+        </div>
+
+        <!-- Play Screen -->
+        <div id="play-screen" class="screen">
+            <div class="stats">
+                <span>Question: <span id="q-number">1</span>/5</span>
+                <span>Score: <span id="score-counter">0</span></span>
+            </div>
+            <div class="progress-bar">
+                <div id="progress-fill"></div>
+            </div>
+            
+            <div id="math-display" class="math-problem">
+                <span id="num1">0</span> + <span id="num2">0</span>
+            </div>
+
+            <div id="options-container">
+                <!-- Buttons will be generated here -->
+            </div>
+        </div>
+
+        <!-- End Screen -->
+        <div id="end-screen" class="screen">
+            <h1 id="result-title">Great Job! 🌟</h1>
+            <div class="score-display">You got <span id="final-score">0</span> out of 5 correct!</div>
+            <div id="medal-icon" style="font-size: 5rem; margin: 20px;">🏆</div>
+            <p id="result-text"></p>
+            <button class="btn" onclick="startGame()">Play Again</button>
+        </div>
+    </div>
+
+    <div id="feedback-icon" class="feedback"></div>
+
+    <script>
+        let score = 0;
+        let currentQuestion = 0;
+        const totalQuestions = 5;
+        let correctAnswer = 0;
+
+        const startScreen = document.getElementById('start-screen');
+        const playScreen = document.getElementById('play-screen');
+        const endScreen = document.getElementById('end-screen');
+        const num1Display = document.getElementById('num1');
+        const num2Display = document.getElementById('num2');
+        const optionsContainer = document.getElementById('options-container');
+        const scoreCounter = document.getElementById('score-counter');
+        const qNumberDisplay = document.getElementById('q-number');
+        const progressFill = document.getElementById('progress-fill');
+        const feedbackIcon = document.getElementById('feedback-icon');
+
+        function startGame() {
+            score = 0;
+            currentQuestion = 0;
+            updateUI();
+            showScreen(playScreen);
+            nextQuestion();
+        }
+
+        function showScreen(screen) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            screen.classList.add('active');
+        }
+
+        function nextQuestion() {
+            if (currentQuestion >= totalQuestions) {
+                endGame();
+                return;
+            }
+
+            currentQuestion++;
+            updateUI();
+
+            // Generate numbers appropriate for age 6-8 (sums up to 20)
+            const n1 = Math.floor(Math.random() * 10) + 1;
+            const n2 = Math.floor(Math.random() * 10) + 1;
+            correctAnswer = n1 + n2;
+
+            num1Display.textContent = n1;
+            num2Display.textContent = n2;
+
+            generateOptions(correctAnswer);
+        }
+
+        function generateOptions(correct) {
+            optionsContainer.innerHTML = '';
+            let options = [correct];
+
+            // Generate 3 unique wrong answers
+            while (options.length < 4) {
+                let wrong = correct + (Math.floor(Math.random() * 7) - 3);
+                if (wrong < 1) wrong = correct + Math.floor(Math.random() * 5) + 1;
+                if (!options.includes(wrong)) {
+                    options.push(wrong);
+                }
+            }
+
+            // Shuffle options
+            options.sort(() => Math.random() - 0.5);
+
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'btn option-btn';
+                btn.textContent = opt;
+                btn.onclick = () => checkAnswer(opt);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selected) {
+            const container = document.getElementById('game-container');
+            
+            if (selected === correctAnswer) {
+                score++;
+                showFeedback('✅');
+                setTimeout(nextQuestion, 1000);
+            } else {
+                showFeedback('❌');
+                container.classList.add('shake');
+                setTimeout(() => {
+                    container.classList.remove('shake');
+                    nextQuestion();
+                }, 1000);
+            }
+        }
+
+        function showFeedback(emoji) {
+            feedbackIcon.textContent = emoji;
+            feedbackIcon.style.display = 'block';
+            feedbackIcon.style.animation = 'fadeIn 0.5s';
+            
+            setTimeout(() => {
+                feedbackIcon.style.display = 'none';
+            }, 1000);
+        }
+
+        function updateUI() {
+            scoreCounter.textContent = score;
+            qNumberDisplay.textContent = currentQuestion;
+            const progress = ((currentQuestion - 1) / totalQuestions) * 100;
+            progressFill.style.width = progress + '%';
+        }
+
+        function endGame() {
+            progressFill.style.width = '100%';
+            document.getElementById('final-score').textContent = score;
+            
+            const title = document.getElementById('result-title');
+            const text = document.getElementById('result-text');
+            const medal = document.getElementById('medal-icon');
+
+            if (score === 5) {
+                title.textContent = "Perfect Score! 🌈";
+                text.textContent = "Wow! You are a Math Superstar!";
+                medal.textContent = "🏆";
+            } else if (score >= 3) {
+                title.textContent = "Great Job! ⭐";
+                text.textContent = "You're doing really well. Keep practicing!";
+                medal.textContent = "🥇";
+            } else {
+                title.textContent = "Keep Trying! 💪";
+                text.textContent = "Practice makes perfect. Try again to get a higher score!";
+                medal.textContent = "🥈";
+            }
+
+            showScreen(endScreen);
+        }
+    </script>
+</body>
+</html>
