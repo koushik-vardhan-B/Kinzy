@@ -2,6 +2,8 @@
 
 An AI-powered educational game generator built with FastAPI and Google Gemini AI.
 
+🚀 **Live Demo:** [https://kinzy-3.onrender.com/](https://kinzy-3.onrender.com/)
+
 ## Setup
 
 ### 1. Create Virtual Environment
