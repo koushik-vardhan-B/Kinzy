@@ -63,6 +63,7 @@ The server starts at `http://localhost:8000`
 ## Try With Prompts
 
 Math Games
+
 1."Create a kid-friendly math addition game for ages 6–8 with five questions and a score counter"
 
 2."Build a multiplication tables quiz for ages 8-10 where kids practice 2x to 10x tables with 10 random questions and instant feedback"
